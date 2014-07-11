@@ -1,46 +1,47 @@
 import play.api.libs.json._
-import sys.process._
 
 case class FiletypeAction(filetype: String, commandTokens: List[String]) {
-  import play.api.libs.json._
-
   implicit val ftaWrites = Json.writes[FiletypeAction]
-
   def toJson = Json.toJson(this)
-
-  def execute: String = Process(commandTokens).!!.trim
 }
 
 object FiletypeAction {
   implicit val fta = Json.format[FiletypeAction]
-
   def fromJson(json: String): FiletypeAction = Json.fromJson[FiletypeAction](Json.parse(json)).get
 }
 
 object OnCreate extends App {
+  import collection.JavaConverters._
+  import collection.mutable
+  import com.typesafe.config.{Config, ConfigObject}
   import com.beachape.filemanagement.RegistryTypes._
   import com.beachape.filemanagement.Messages._
+  import java.nio.file.Path
   import java.nio.file.StandardWatchEventKinds._
-  import collection.JavaConverters._
 
   implicit val system = akka.actor.ActorSystem("actorSystem")
   val fileMonitorActor = system.actorOf(com.beachape.filemanagement.MonitorActor())
 
-  val config = com.typesafe.config.ConfigFactory.parseResources("config.json")
-  val x = config.entrySet.asScala
-  println(s"config.entrySet = $x")
+  def handleActions(path: Path, config: Config) = {
+    import sys.process._
+    val filetype: String = config.getString("filetype")
+    if (path.toString.endsWith(filetype)) {
+      val commandTokens: mutable.Buffer[String] = config.getStringList("commandTokens").asScala
+      val command = commandTokens.map(_.replaceAll("\\$f", path.toString))
+      println(s"$path was created so the following is about to be executed: $command")
+      val result = Process(command).!!.trim
+      println(result)
+    } else {
+      println(s"$path does not end with $filetype so action was not triggered.")
+    }
+  }
 
+  val config = com.typesafe.config.ConfigFactory.parseResources("config.json")
   val createCallback: Callback = { path =>
-    config.entrySet.asScala.foreach { case entry =>
-      val filetype: String = entry.getKey
-      if (path endsWith filetype) {
-        val commandTokens: List[String] = config.getStringList(filetype).asScala.toList
-        println(s"$path was created so the following should be executed: $commandTokens")
-        val result = FiletypeAction(filetype, commandTokens).execute
-        println(result)
-      } else {
-        println(s"$path does not end with $filetype so action was not triggered.")
-      }
+    val am = config.getList("actionMap")
+    am.asScala.foreach { case configObject: ConfigObject =>
+      val actionKeys: mutable.Set[String] = configObject.unwrapped.keySet.asScala
+      handleActions(path, configObject.toConfig)
     }
   }
 
