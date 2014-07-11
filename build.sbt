@@ -6,7 +6,7 @@ name := "onCreate"
 
 version := "0.1.0-SNAPSHOT"
 
-scalaVersion := "2.10.4"
+scalaVersion := "2.11.1"
 
 scalacOptions ++= Seq("-deprecation", "-encoding", "UTF-8", "-feature", "-target:jvm-1.7", "-unchecked",
     "-Ywarn-adapted-args", "-Ywarn-value-discard", "-Xlint")
@@ -26,7 +26,7 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.beachape.filemanagement" %% "schwatcher" % "0.1.5",
-  "com.typesafe.play"       %% "play-json"      % "2.2.3",
+  "com.typesafe.play"       %% "play-json"      % "2.3.1",
   "com.typesafe"            %  "config"         % "1.2.0" withSources()
 //  "org.scalatest"           %% "scalatest"     % "2.0" % "test" withSources
 )
