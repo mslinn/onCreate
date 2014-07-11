@@ -1,0 +1,10 @@
+[
+  {
+    "filetype": "m4a",
+    "commandTokens": ["m4aToWav", "$f"]
+  },
+  {
+    "filetype": "mov",
+    "commandTokens": ["movToMono", "$f"]
+  }
+]
