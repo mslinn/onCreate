@@ -20,8 +20,8 @@ object OnCreate extends App {
         if (fileName.startsWith("http:")) {
           AudioSystem.getAudioInputStream(new java.net.URL(fileName) )
         } else {
-          val file: File = new File(getClass.getClassLoader.getResource(fileName).getFile)
-          AudioSystem.getAudioInputStream(file)
+          val stream = getClass.getClassLoader.getResourceAsStream(fileName)
+          AudioSystem.getAudioInputStream(new java.io.BufferedInputStream(stream))
         }
       }
       val clip = AudioSystem.getClip
