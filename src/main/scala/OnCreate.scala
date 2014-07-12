@@ -16,11 +16,16 @@ object OnCreate extends App {
     import java.net.URL
     import javax.sound.sampled._
 
-    val url = new URL(fileName)
-    val audioIn = AudioSystem.getAudioInputStream(url)
-    val clip = AudioSystem.getClip
-    clip.open(audioIn)
-    clip.start()
+    try {
+      val url = new URL(fileName)
+      val audioIn = AudioSystem.getAudioInputStream(url)
+      val clip = AudioSystem.getClip
+      clip.open(audioIn)
+      clip.start()
+    } catch {
+      case e: Exception =>
+        println(e.getMessage)
+    }
   }
 
   def handleActions(path: Path, config: Config) = {
@@ -30,10 +35,15 @@ object OnCreate extends App {
       val commandTokens: mutable.Buffer[String] = config.getStringList("commandTokens").asScala
       val command = commandTokens.map(_.replaceAll("\\$f", path.toString))
       println(s"$path was created so the following is about to be executed: $command")
-      playSound("http://mywebpages.comcast.net/jdeshon2/wave_files/jad0001a.wav")
-      val result = Process(command).!!.trim
-      println(result)
-      playSound("http://mywebpages.comcast.net/jdeshon2/wave_files/jad0001a.wav")
+      playSound("http://home.comcast.net/~jdeshon2/wave_files/jad0001a.wav")
+      try {
+        val result = Process(command).!!.trim
+        println(result)
+      } catch {
+        case e: Exception =>
+          println(e.getMessage)
+      }
+      playSound("http://home.comcast.net/~jdeshon2/wave_files/jad0001a.wav")
     } else {
       println(s"$path does not end with $filetype so action was not triggered.")
     }
