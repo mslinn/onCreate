@@ -1,4 +1,4 @@
-case class FiletypeAction(filetype: String, commandTokens: List[String], soundStart: String="", soundEnd: String="")
+case class FiletypeAction(filetype: String, commandTokens: List[String])
 
 object OnCreate extends App {
   import collection.JavaConverters._
