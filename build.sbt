@@ -25,10 +25,8 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "com.beachape.filemanagement" %% "schwatcher" % "0.1.5",
-  "com.typesafe.play"       %% "play-json"      % "2.3.1",
-  "com.typesafe"            %  "config"         % "1.2.0" withSources()
-//  "org.scalatest"           %% "scalatest"     % "2.0" % "test" withSources
+  "com.beachape.filemanagement" %% "schwatcher"   % "0.1.5",
+  "com.typesafe"                %  "config"       % "1.2.0" withSources()
 )
 
 logLevel := Level.Warn

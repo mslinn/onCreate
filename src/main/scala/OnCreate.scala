@@ -1,14 +1,4 @@
-import play.api.libs.json._
-
-case class FiletypeAction(filetype: String, commandTokens: List[String]) {
-  implicit val ftaWrites = Json.writes[FiletypeAction]
-  def toJson = Json.toJson(this)
-}
-
-object FiletypeAction {
-  implicit val fta = Json.format[FiletypeAction]
-  def fromJson(json: String): FiletypeAction = Json.fromJson[FiletypeAction](Json.parse(json)).get
-}
+case class FiletypeAction(filetype: String, commandTokens: List[String])
 
 object OnCreate extends App {
   import collection.JavaConverters._
