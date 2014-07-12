@@ -14,17 +14,12 @@ object OnCreate extends App {
   val fileMonitorActor = system.actorOf(com.beachape.filemanagement.MonitorActor())
 
   def playSound(fileName: String): Unit = {
-    import java.net.URL
-    import javax.sound.sampled._
-    import scala.concurrent.Await
-    import scala.concurrent.duration._
-
     try {
-      import scala.concurrent.Promise
+      import javax.sound.sampled._
       val audioIn: AudioInputStream = {
-        if (fileName.startsWith("http:"))
-          AudioSystem.getAudioInputStream(new URL(fileName) )
-        else {
+        if (fileName.startsWith("http:")) {
+          AudioSystem.getAudioInputStream(new java.net.URL(fileName) )
+        } else {
           val file: File = new File(getClass.getClassLoader.getResource(fileName).getFile)
           //println(s"Reading from ${file.getCanonicalPath}")
           AudioSystem.getAudioInputStream(file)
@@ -33,7 +28,7 @@ object OnCreate extends App {
       val clip = AudioSystem.getClip
       clip.open(audioIn)
       clip.start()
-      val promise = Promise[String]()
+      val promise = concurrent.Promise[String]()
       clip.addLineListener(new LineListener { // wait until sound has finished playing
         def update(event: LineEvent): Unit = {
           if (event.getType == LineEvent.Type.STOP) {
@@ -43,7 +38,7 @@ object OnCreate extends App {
           }
         }
       })
-      Await.result(promise.future, Duration.Inf)
+      concurrent.Await.result(promise.future, concurrent.duration.Duration.Inf)
       ()
     } catch {
       case e: Exception =>
