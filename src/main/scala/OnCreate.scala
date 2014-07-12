@@ -21,7 +21,6 @@ object OnCreate extends App {
           AudioSystem.getAudioInputStream(new java.net.URL(fileName) )
         } else {
           val file: File = new File(getClass.getClassLoader.getResource(fileName).getFile)
-          //println(s"Reading from ${file.getCanonicalPath}")
           AudioSystem.getAudioInputStream(file)
         }
       }
@@ -64,8 +63,6 @@ object OnCreate extends App {
       val endMillis = System.currentTimeMillis
       if (endMillis-startMillis<250) Thread.sleep(250)
       playSound(if (result==0) "descending.wav" else "problem.wav")
-    } else {
-      //println(s"$path does not end with $filetype so action was not triggered.")
     }
   }
 
