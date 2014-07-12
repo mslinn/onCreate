@@ -26,7 +26,7 @@ object OnCreate extends App {
           AudioSystem.getAudioInputStream(new URL(fileName) )
         else {
           val file: File = new File(getClass.getClassLoader.getResource(fileName).getFile)
-          println(s"Reading from ${file.getCanonicalPath}")
+          //println(s"Reading from ${file.getCanonicalPath}")
           AudioSystem.getAudioInputStream(file)
         }
       }
@@ -39,10 +39,12 @@ object OnCreate extends App {
           if (event.getType == LineEvent.Type.STOP) {
             event.getLine.close()
             promise.success("done")
+            ()
           }
         }
       })
       Await.result(promise.future, Duration.Inf)
+      ()
     } catch {
       case e: Exception =>
         println(e)
@@ -50,15 +52,15 @@ object OnCreate extends App {
   }
 
   def handleActions(path: Path, config: Config) = {
-    import sys.process._
     val filetype: String = config.getString("filetype")
     if (path.toString.endsWith(filetype)) {
       val commandTokens: mutable.Buffer[String] = config.getStringList("commandTokens").asScala
-      val command = commandTokens.map(_.replaceAll("\\$f", path.toString))
-      println(s"$path was created so the following is about to be executed: $command")
+      val command = commandTokens.map(_.replaceAll("\\$f", path.toString.replace("\\", "\\\\")))
+      println(s"Execute: ${command.mkString(" ")}")
       playSound("ascending.wav")
       val startMillis = System.currentTimeMillis
       val result = try {
+        import sys.process._
         Process(command).!
       } catch {
         case e: Exception =>
@@ -68,7 +70,7 @@ object OnCreate extends App {
       if (endMillis-startMillis<250) Thread.sleep(250)
       playSound(if (result==0) "descending.wav" else "problem.wav")
     } else {
-      println(s"$path does not end with $filetype so action was not triggered.")
+      //println(s"$path does not end with $filetype so action was not triggered.")
     }
   }
 
