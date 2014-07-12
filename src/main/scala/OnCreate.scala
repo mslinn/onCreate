@@ -86,8 +86,6 @@ object OnCreate extends App {
   }
   println(s"Watching $watchedDirectory")
 
-  val x = watchedFile.toPath
-
   fileMonitorActor ! RegisterCallback(
     ENTRY_CREATE,
     modifier = None,
