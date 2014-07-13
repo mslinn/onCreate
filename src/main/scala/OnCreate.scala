@@ -45,11 +45,17 @@ object OnCreate extends App {
     }
   }
 
+  /** @param path contains a filetype, of course, but the commands executed must only contain the fully qualified file
+    *             name, without the filetype */
   def handleActions(path: Path, config: Config) = {
     val filetype: String = config.getString("filetype")
     if (path.toString.endsWith(filetype)) {
       val commandTokens: mutable.Buffer[String] = config.getStringList("commandTokens").asScala
-      val command = commandTokens.map(_.replaceAll("\\$f", path.toString.replace("\\", "\\\\")))
+      val filePathNoType = {
+        val str = path.toString
+        str.replace("\\", "\\\\").substring(0, str.lastIndexOf("."))
+      }
+      val command = commandTokens.map(_.replaceAll("\\$f", filePathNoType))
       println(s"Execute: ${command.mkString(" ")}")
       playSound("ascending.wav")
       val startMillis = System.currentTimeMillis
